@@ -55,3 +55,8 @@ func ContentScraperTaskFromGooglePubSubMessage(msg pubsub.Message) (ArticleScrap
 
 	return t, nil
 }
+
+type CheckPlagiarismTask struct {
+	Task
+	Article string
+}
