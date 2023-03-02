@@ -26,3 +26,15 @@ func TaskToGooglePubSubMessage(t any) (*pubsub.Message, error) {
 		Data: taskBytes,
 	}, nil
 }
+
+func ProvideSERPTaskFromGooglePubSubMessage(msg pubsub.Message) (ProvideSERPTask, error) {
+	var (
+		t ProvideSERPTask
+	)
+
+	if err := json.Unmarshal(msg.Data, &t); err != nil {
+		return t, err
+	}
+
+	return t, nil
+}
