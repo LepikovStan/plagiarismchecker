@@ -11,10 +11,6 @@ type Task struct {
 	OriginalText string `json:"original_text"`
 }
 
-t
-
-type r struct{}
-
 func TaskToGooglePubSubMessage(t interface{}) (*pubsub.Message, error) {
 	taskBytes, err := json.Marshal(t)
 	if err != nil {
