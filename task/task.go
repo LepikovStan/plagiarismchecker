@@ -26,7 +26,7 @@ func TaskToGooglePubSubMessage(t interface{}) (*pubsub.Message, error) {
 	}, nil
 }
 
-ype ProvideSERPTask struct {
+type ProvideSERPTask struct {
 	Task
 	Keyword string `json:"keyword"`
 }
