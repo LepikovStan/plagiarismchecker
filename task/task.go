@@ -60,3 +60,15 @@ type CheckPlagiarismTask struct {
 	Task
 	Article string
 }
+
+func CheckPlagiarismTaskFromGooglePubSubMessage(msg pubsub.Message) (CheckPlagiarismTask, error) {
+	var (
+		t CheckPlagiarismTask
+	)
+
+	if err := json.Unmarshal(msg.Data, &t); err != nil {
+		return t, err
+	}
+
+	return t, nil
+}
