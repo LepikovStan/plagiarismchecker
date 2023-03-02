@@ -16,6 +16,8 @@ type ProvideSERPTask struct {
 	Keyword string `json:"keyword"`
 }
 
+type r struct{}
+
 func TaskToGooglePubSubMessage(t interface{}) (*pubsub.Message, error) {
 	taskBytes, err := json.Marshal(t)
 	if err != nil {
