@@ -7,8 +7,10 @@ import (
 )
 
 type Task struct {
-	ID           int    `json:"id"`
-	OriginalText string `json:"original_text"`
+	ID              string `json:"id"`
+	State           string `json:"state"`
+	OriginalArticle string `json:"original_article"`
+	ErrorMessage    string `json:"error_message"`
 }
 
 func TaskToGooglePubSubMessage(t interface{}) (*pubsub.Message, error) {
