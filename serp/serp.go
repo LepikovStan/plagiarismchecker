@@ -15,11 +15,11 @@ type SERPOrganicResult struct {
 }
 
 type SERPMetaData struct {
+	NumberOfResults        int    `json:"number_of_results"`
+	NumberOfOrganicResults int    `json:"number_of_organic_results"`
+	NumberOfAds            int    `json:"number_of_ads"`
+	NumberOfPage           int    `json:"number_of_page"`
 	URL                    string `json:"url"`
-	NumberOfResults        int16  `json:"number_of_results"`
 	Location               string `json:"location"`
-	NumberOfOrganicResults int16  `json:"number_of_organic_results"`
-	NumberOfAds            int8   `json:"number_of_ads"`
-	NumberOfPage           int8   `json:"number_of_page"`
 	NoResultspage          string `json:"no_results_message"`
 }
