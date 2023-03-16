@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"cloud.google.com/go/pubsub"
+	"github.com/satori/go.uuid"
 )
 
 type Task struct {
@@ -11,6 +12,14 @@ type Task struct {
 	State           string `json:"state"`
 	OriginalArticle string `json:"original_article"`
 	ErrorMessage    string `json:"error_message"`
+}
+
+func NewTask(article string) Task {
+	return Task{
+		ID:              uuid.NewV4().String(),
+		State:           "created",
+		OriginalArticle: article,
+	}
 }
 
 func TaskToGooglePubSubMessage(t interface{}) (*pubsub.Message, error) {
