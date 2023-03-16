@@ -69,7 +69,8 @@ func ContentScraperTaskFromGooglePubSubMessage(msg pubsub.Message) (ArticleScrap
 
 type CheckPlagiarismTask struct {
 	Task
-	Article string
+	Article    string
+	ArticleURL string `json:"article_url"`
 }
 
 func CheckPlagiarismTaskFromGooglePubSubMessage(msg pubsub.Message) (CheckPlagiarismTask, error) {
