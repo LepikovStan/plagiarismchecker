@@ -1,7 +1,7 @@
 package serp
 
 type SERP struct {
-	StatusCode int8     `json:"statusCode"`
+	StatusCode int      `json:"statusCode"`
 	Body       SERPBody `json:"body"`
 }
 
