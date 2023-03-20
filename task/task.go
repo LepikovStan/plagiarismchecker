@@ -13,6 +13,7 @@ type Task struct {
 	State           string    `json:"state"`
 	OriginalArticle string    `json:"original_article"`
 	ErrorMessage    string    `json:"error_message"`
+	Title           string    `json:"title"`
 	CreatedAt       time.Time `json:created_at`
 }
 
