@@ -2,16 +2,18 @@ package task
 
 import (
 	"encoding/json"
+	"time"
 
 	"cloud.google.com/go/pubsub"
 	"github.com/satori/go.uuid"
 )
 
 type Task struct {
-	ID              string `json:"id"`
-	State           string `json:"state"`
-	OriginalArticle string `json:"original_article"`
-	ErrorMessage    string `json:"error_message"`
+	ID              string    `json:"id"`
+	State           string    `json:"state"`
+	OriginalArticle string    `json:"original_article"`
+	ErrorMessage    string    `json:"error_message"`
+	CreatedAt       time.Time `json:created_at`
 }
 
 func NewTask(article string) Task {
