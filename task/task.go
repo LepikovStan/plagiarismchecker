@@ -6,6 +6,7 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	"github.com/satori/go.uuid"
+	"plch/page"
 )
 
 type Task struct {
@@ -56,6 +57,7 @@ func ProvideSERPTaskFromGooglePubSubMessage(msg pubsub.Message) (ProvideSERPTask
 type ArticleScraperTask struct {
 	Task
 	ArticleURL string `json:"article_url"`
+	page.Page
 }
 
 func ContentScraperTaskFromGooglePubSubMessage(msg pubsub.Message) (ArticleScraperTask, error) {
