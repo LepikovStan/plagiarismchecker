@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"plch/page"
+	"github.com/LepikovStan/plagiarismchecker/page"
 
 	"cloud.google.com/go/pubsub"
 	uuid "github.com/satori/go.uuid"
