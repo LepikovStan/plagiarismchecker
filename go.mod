@@ -1,10 +1,9 @@
-module plch
+module github.com/LepikovStan/plagiarismchecker
 
 go 1.20
 
 require (
 	cloud.google.com/go/pubsub v1.29.0
-	github.com/LepikovStan/plagiarismchecker v0.0.15
 	github.com/satori/go.uuid v1.2.0
 )
 
