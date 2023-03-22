@@ -11,7 +11,9 @@ type SERPBody struct {
 }
 
 type SERPOrganicResult struct {
-	URL string `json:"url"`
+	URL         string `json:"url"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
 }
 
 type SERPMetaData struct {
