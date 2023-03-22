@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"time"
 
-	"cloud.google.com/go/pubsub"
-	"github.com/satori/go.uuid"
 	"plch/page"
+
+	"cloud.google.com/go/pubsub"
+	uuid "github.com/satori/go.uuid"
 )
 
 type Task struct {
@@ -57,7 +58,7 @@ func ProvideSERPTaskFromGooglePubSubMessage(msg pubsub.Message) (ProvideSERPTask
 type ArticleScraperTask struct {
 	Task
 	ArticleURL string `json:"article_url"`
-	page.Page
+	Page       page.Page
 }
 
 func ContentScraperTaskFromGooglePubSubMessage(msg pubsub.Message) (ArticleScraperTask, error) {
@@ -76,6 +77,7 @@ type CheckPlagiarismTask struct {
 	Task
 	Article    string
 	ArticleURL string `json:"article_url"`
+	Page       page.Page
 }
 
 func CheckPlagiarismTaskFromGooglePubSubMessage(msg pubsub.Message) (CheckPlagiarismTask, error) {
