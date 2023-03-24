@@ -2,6 +2,7 @@ package task
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 
 	"github.com/LepikovStan/plagiarismchecker/page"
@@ -19,11 +20,12 @@ type Task struct {
 	CreatedAt       time.Time `json:created_at`
 }
 
-func NewTask(article string) Task {
+func New(article string) Task {
 	return Task{
 		ID:              uuid.NewV4().String(),
 		State:           "created",
 		OriginalArticle: article,
+		Title:           strings.Split(article, ".")[0],
 	}
 }
 
