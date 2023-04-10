@@ -25,7 +25,7 @@ func New(article string) Task {
 		ID:              uuid.NewV4().String(),
 		State:           "created",
 		OriginalArticle: article,
-		Title:           strings.Split(article, ".")[0],
+		Title:           strings.Split(strings.Split(strings.Split(article, ".")[0], "?")[0], "!")[0],
 	}
 }
 
