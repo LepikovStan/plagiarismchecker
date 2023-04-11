@@ -12,8 +12,7 @@ type Report struct {
 	UniquePercent        int
 	TotalWords           int
 	TotalChars           int
-	PlagiarisedSentences []int
-	PlagiarisedPages     []int
+	PlagiarisedSentences int64 `gorm:"type:integer[]"`
 	TaskID               string
 	CreatedAt            time.Time
 }
