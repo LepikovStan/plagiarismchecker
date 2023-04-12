@@ -15,6 +15,7 @@ type Report struct {
 	PlagiarisedSentences []int64 `gorm:"type:integer[]"`
 	TaskID               string
 	CreatedAt            time.Time
+	ReadingTime          time.Duration
 }
 
 func NewPageReport() {}
