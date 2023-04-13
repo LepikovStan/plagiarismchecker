@@ -14,6 +14,7 @@ type Report struct {
 	TotalChars           int
 	PlagiarisedSentences []int64 `gorm:"type:integer[]"`
 	TaskID               string
+	UserID               string
 	CreatedAt            time.Time
 	ReadingTime          time.Duration
 }
