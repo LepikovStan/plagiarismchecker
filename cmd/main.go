@@ -1,86 +1,157 @@
-package main
+// Package p contains an HTTP Cloud Function.
+package p
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
+	"encoding/json"
 	"encoding/base64"
-	"encoding/hex"
-	"fmt"
 	"log"
+	"net/http"
+	"time"
+	"errors"
 	"strings"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	//"github.com/lib/pq"
+	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-// type Task struct {
-// 	ID              string
-// 	State           string
-// 	OriginalArticle string
-// 	ErrorMessage    string
-// }
+var (
+	dbConn *gorm.DB
+)
 
-func main() {
-	tokenParam := "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhZTA5ZTIxYS1lOWM2LTQzYjktYjZiNy1mN2U0N2UzNzg4MGEiLCJleHAiOjE2ODEyMTEyOTMsInZpZXdlcl9pZCI6IjE1MDUxMzg1IiwiaXNfYXBwX2luc3RhbGxlZCI6ZmFsc2UsImlzX21haW5fcHJvZHVjdF9hY3RpdmUiOmZhbHNlLCJpc19hcHBfdGFrZW5fZm9yX2ZyZWUiOnRydWUsImFjdGl2ZV9wcm9kdWN0cyI6W10sImVtYWlsX3N1YnNjcmlwdGlvbiI6eyJzdGF0ZSI6IlNUQVRFX1VOU1BFQ0lGSUVEIn0sInVybCI6IiIsImxhbmciOiJlbiJ9._R1FGBtLRtoIejRB4sx-OMwJYmQr4kNwftTAqoSsSsU"
+func init() {
+   // err is pre-declared to avoid shadowing client.
+   var err error
 
-	tokenParts := strings.Split(tokenParam, ".")
-	tokenHeaderB64, tokenPayloadB64, tokenSignature := tokenParts[0], tokenParts[1], tokenParts[2]
-	tokenHeader, err := base64.StdEncoding.DecodeString(tokenHeaderB64)
-	log.Println("tokenHeader err --->", err)
-	tokenPayload, err := base64.StdEncoding.DecodeString(tokenPayloadB64)
-	log.Println("tokenPayload err --->", err)
-	// tokenSignature, err := base64.StdEncoding.DecodeString(tokenSignatureB64)
-	// log.Println("tokenSignature err --->", err)
-	//sum := sha256.Sum256([]byte(fmt.Sprintf("%s.%s.", tokenHeaderB64, tokenPayloadB64)))
+    dbConn, err = gorm.Open(postgres.New(postgres.Config{
+		DriverName: "cloudsqlpostgres",
+		DSN: "user=postgres port=5432 password=1234 host=plagiarism-checker-377309:us-central1:pl-checker-psql dbname=plagiarism_checker sslmode=disable",
+	}))
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	h := hmac.New(sha256.New, []byte("fd583962-3439-4226-9729-2b00c41b343c"))
-	// Write Data to it
-	h.Write([]byte(fmt.Sprintf("%s.%s", tokenHeaderB64, tokenPayloadB64)))
-	// Get result and encode as hexadecimal string
-	sha := hex.EncodeToString(h.Sum(nil))
-	fmt.Println("Result: ", sha, tokenSignature)
+   log.Println("GetPlagiarismReportsList fn inited")
+}
 
-	sEnc := base64.StdEncoding.EncodeToString([]byte(sha))
-	fmt.Println("Result: ", sEnc, tokenSignature)
 
-	log.Println("tokenHeader --->", string(tokenHeader))
-	log.Println("tokenPayload --->", string(tokenPayload))
-	// log.Println("tokenSignature --->", string(tokenSignature))
 
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-		}
+func GetPlagiarismReportsList(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "OPTIONS" {
+		w.Write([]byte(""))
+		return
+	}
 
-		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return hmacSampleSecret, nil
-	})
+	tokenParam := r.Header.Get("Authorization")
+	log.Println(tokenParam)
 
-	// token, error := jwt.Parse(tokenParam, func(token *jwt.Token) (interface{}, error) {
-	// 	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-	// 		return nil, fmt.Errorf("There was an error")
-	// 	}
-	// 	return []byte("fd583962-3439-4226-9729-2b00c41b343c"), nil
-	// })
-	// if error != nil {
-	// 	fmt.Println("error.Error()", error.Error())
+	// if tokenParam == "" {
+	// 	log.Println("ERROR: authorization token is empty")
+	// 	w.WriteHeader(http.StatusBadRequest)
+	// 	json.NewEncoder(w).Encode(Response{ Errors: []ResponseError{ { Type: "error", Key: "authorization_failed" } } })
 	// 	return
 	// }
-	// if token.Valid {
-	// 	fmt.Println("token valid")
-	// 	// 	// var user User
-	// 	// 	// mapstructure.Decode(token.Claims, &user)
 
-	// 	// 	// vars := mux.Vars(req)
-	// 	// 	name := vars["userId"]
-	// 	// 	if name != user.Username {
-	// 	// 		json.NewEncoder(w).Encode(ErrorMsg{Message: "Invalid authorization token - Does not match UserID"})
-	// 	// 		return
-	// 	// 	}
+	sDec, _ := base64.StdEncoding.DecodeString(strings.Split(tokenParam, ".")[1])
+    log.Println(string(sDec))
+    log.Println()
 
-	// 	// 	context.Set(req, "decoded", token.Claims)
-	// 	// 	next(w, req)
-	// 	// } else {
-	// 	// 	json.NewEncoder(w).Encode(ErrorMsg{Message: "Invalid authorization token"})
-	// }
+	if err := verifyToken(tokenParam, "fd583962-3439-4226-9729-2b00c41b343c"); err != nil {
+		log.Println("ERROR: ", err.Error())
+
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(Response{ Error: &ResponseError{ Type: "error", Key: "authorization_failed" } })
+		return
+	}
+
+	reportsList, err := getReportsList()
+	if err != nil {
+		log.Println("ERROR ->", err)
+
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(Response{ Error: &ResponseError{ Type: "error", Key: "internal_server_error" } })
+		return
+	}
+	
+	if err := json.NewEncoder(w).Encode(Response{ Data: reportsList }); err != nil {
+		log.Println("ERROR ->", err)
+
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(Response{ Error: &ResponseError{ Type: "error", Key: "internal_server_error" } })
+		return
+	}
 }
+
+func verifyToken(tokenParam, key string) error {
+	if tokenParam == "" {
+		return errors.New("authorization token is required")
+	}
+
+	token, err := jwt.Parse(tokenParam, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("verify token error")
+		}
+		return []byte(key), nil
+	})
+	if !token.Valid {
+		err = errors.New("auth token is invalid")
+	}
+	return err
+}
+
+type ReportsList []ReportsListItem
+type ReportsListItem struct {
+	ID string `json:"id"`
+	CreatedAt time.Time `json:"-"`
+	CreatedAtPresenter int `json:"created_at"`
+  	Title string `json:"title"`
+  	PlagiarisedPercent   int `json:"plagiarised_percent"`
+	Seen time.Time `json:"-"`
+	SeenPresenter int `json:"seen"`
+  	State string `json:"state"`
+}
+
+type ResponseError struct {
+	Type string `json:"type"`
+	Key string `json:"key"`
+}
+
+type Response struct {
+	Error *ResponseError `json:"error,omitempty"`
+	Data any `json:"data"`
+}
+
+func getReportsList() (ReportsList, error) {
+	var (
+		r ReportsListItem
+		rr = make(ReportsList, 0)
+	)
+
+	rows, err := dbConn.Table("tasks as t").
+		Select("t.id, t.created_at, t.title, coalesce(r.plagiarised_percent, 0) as plagiarised_percent, coalesce(r.seen, to_timestamp(0)) as seen, t.state").
+		Joins("left join reports as r on r.task_id = t.id").
+		Order("t.created_at desc").
+		Limit(5).
+		Rows()
+	if err != nil {
+		log.Println(err)
+	}
+
+	for rows.Next() {
+		if err := rows.Scan(&r.ID, &r.CreatedAt, &r.Title, &r.PlagiarisedPercent, &r.Seen, &r.State); err != nil {
+			log.Println(err)
+		}
+		log.Println("report line --->>>", r)
+		r.SeenPresenter = int(r.Seen.Unix())
+		r.CreatedAtPresenter = int(r.CreatedAt.Unix())
+		r.Title = strings.ReplaceAll(r.Title, `\n`, " ")
+		rr = append(rr, r)
+	}
+	
+	//select r.created_at, t.title, r.plagiarised_percent, r.seen, t.state from reports as r join tasks as t  on r.task_id = t.id order by r.created_at desc limit 5;
+
+	return rr, nil
+} 

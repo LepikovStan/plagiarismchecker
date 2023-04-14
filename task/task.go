@@ -21,10 +21,11 @@ type Task struct {
 	CreatedAt       time.Time `json:created_at`
 }
 
-func New(article string) Task {
+func New(article, userID string) Task {
 	return Task{
 		ID:              uuid.NewV4().String(),
 		State:           "created",
+		UserID:          userID,
 		OriginalArticle: article,
 		Title:           strings.Split(strings.Split(strings.Split(article, ".")[0], "?")[0], "!")[0],
 	}
