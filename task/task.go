@@ -2,10 +2,10 @@ package task
 
 import (
 	"encoding/json"
-	"strings"
 	"time"
 
 	"github.com/LepikovStan/plagiarismchecker/page"
+	"github.com/LepikovStan/plagiarismchecker/textutils"
 
 	"cloud.google.com/go/pubsub"
 	uuid "github.com/satori/go.uuid"
@@ -27,7 +27,7 @@ func New(article, userID string) Task {
 		State:           "created",
 		UserID:          userID,
 		OriginalArticle: article,
-		Title:           strings.Split(strings.Split(strings.Split(article, ".")[0], "?")[0], "!")[0],
+		Title:           textutils.SplitTextToSentences(article)[0],
 	}
 }
 
