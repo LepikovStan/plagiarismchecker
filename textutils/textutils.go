@@ -3,6 +3,8 @@ package textutils
 import (
 	"regexp"
 	"strings"
+
+	"github.com/neurosnap/sentences/english"
 )
 
 var (
@@ -21,4 +23,36 @@ func SplitTextToSentences(text string) []string {
 	}
 
 	return result
+}
+
+func SplitToBatches(text string, batchSize int) []string {
+	tokenizer, err := english.NewSentenceTokenizer(nil)
+	if err != nil {
+		panic(err)
+	}
+	sents := tokenizer.Tokenize(text)
+
+	var (
+		batches         = make([]string, 0)
+		batchCharsCount = 0
+		batch           string
+	)
+	for i := 0; i < len(sents); i++ {
+		sent := strings.TrimSpace(sents[i].Text)
+		sentCharsCount := strings.Count(sent, "")
+
+		if batchCharsCount+sentCharsCount > batchSize {
+			batches = append(batches, batch)
+			batch = ""
+			batchCharsCount = 0
+		}
+		batch = batch + " " + sent
+		batchCharsCount += sentCharsCount
+
+		if i == len(sents)-1 {
+			batches = append(batches, batch)
+		}
+	}
+
+	return batches
 }
