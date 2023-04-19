@@ -11,7 +11,7 @@ func Retry(ctx context.Context, fn func(), delays []time.Duration) {
 
 		select {
 		case <-ctx.Done():
-			return // returning not to leak the goroutine
+			return
 		default:
 			time.Sleep(delay)
 			fn()
